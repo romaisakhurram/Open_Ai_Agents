@@ -41,10 +41,14 @@ async def on_chat_start():
     )
 
     cl.user_session.set("agent" , agent)
-    await cl.Message(content = "Welcome to the Agent").send()
+    await cl.Message(content = "Welcome to the  Romi! AI Assistant how can you help today?").send()
 
 @ cl.on_message
 async def on_message(message:cl.Message):
+
+    # history = cl.user_session.get("chat history") or []    #streamed chat history
+    # history.append({"role" : "user" , "content" : message.content})
+
     msg = cl.Message(content = "Thinking...")
     await msg.send()
 
@@ -52,13 +56,13 @@ async def on_message(message:cl.Message):
 
     config : RunConfig = cast(RunConfig , cl.user_session.get("config"))
 
-    history = cl.user_session.get("chat history") or []
+    history = cl.user_session.get("chat history") or []      #non-streamed chat history
     history.append({"role" : "user" , "content" : message.content})
 
     try:
         print("\n [CALLING-AGENT-WITH-CONTEXT]\n" , history , "\n")
 
-        result = Runner.run_sync(
+        result = Runner.run_sync(       #non-streamed response
             starting_agent = agent,
             input = history,
             run_config = RunConfig
@@ -70,12 +74,22 @@ async def on_message(message:cl.Message):
 
         cl.user_session.set("chat history" , result.to_input_list())
 
+        # result = Runner.run_streamed(agent , history , run_config = config)   #streamed response
+        # async for event in result.stream_events():
+        #     if event.type ==  "raw_response_event" and hasattr(event.data , "delta"):
+        #         token = event.data.delta
+        #         await msg.stream_token(token)
+
+        # history.append({"role": "assistant", "content": msg.content})
+        # cl.user_session.set("chat history" , history)
+
         print(f"User: {message.content}")
-        print(f"Assistant: {response_content}")
+        print(f"Assistant: {msg.content}")
     
     except Exception as e:
-        msg.content = f"Error: {str(e)}"
+        msg.content = f"Error: {str(e)}"     #non-streamed error message
         await msg.update()
+        # await msg.update(content=f"Error: {str(e)}")    #streming error message
         print(f"Error: {str(e)}")
 
 
