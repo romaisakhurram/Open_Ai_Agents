@@ -5,12 +5,12 @@ import requests
 
 load_dotenv()
 
-@function_tool
+# @function_tool
 
-def get_info_details():
-    response = requests.get("https://api.gemini.com/v1/pubticker/btcusd")
-    result = response.json()
-    return result
+# def get_info_details():
+#     response = requests.get("https://api.gemini.com/v1/pubticker/btcusd")
+#     result = response.json()
+#     return result
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
@@ -36,21 +36,20 @@ config = RunConfig(
 )
      
 
-Greeting_agent = Agent(
-    name = "Greeting Agent",
-    instructions = "You are a greeting agent. your task is says to Salam , when someone says hello , hi or anything similar",
+frontened_agent = Agent(
+    name = "Frontened Agent",
+    instructions = "You are a frontened agent. your help with UI/Ux design , HTML , CSS and Javascript Do not ralated backened questions",
 )
 
-info_details_agent = Agent(
-    name = "Info Agent",
-    instructions = "You are an info agent. your task is to provide information about the agents.",
-    tools = [get_info_details]
+backened_agent = Agent(
+    name = "Backened Ageny",
+    instructions = "You are an backened agent. your help with database , integration , Django , APIs and authentications do not ralted with frontened questions",
 )
 
 cordinate_agent = Agent(
     name = "Cordinate Agent",
-    instructions = "You are a cordinate agent. your task is to provide the cordinates of the agents.",
-    handoffs = [Greeting_agent, info_details_agent]
+    instructions = "You are a cordinate agent who decide whether a frontened or backened. If the user ask ask UI/Ux , HTML , CSS and Javascript handsoffs to the frontened , If the user ask  database , integration , Django , APIs and authentications  handsoffs to the backened and If it's unrelated question to plicy decline",
+    handoffs = [frontened_agent, backened_agent],
 )
 
 input_value = input("Enter a question: ")
