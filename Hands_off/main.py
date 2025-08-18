@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
-from agents import Agent , Runner , function_tool , AsyncOpenAI , OpenAIChatCompletionsModel, RunConfig 
+from agents import Agent , Runner , AsyncOpenAI , OpenAIChatCompletionsModel, RunConfig 
 import os
-import requests
 
 load_dotenv()
 
